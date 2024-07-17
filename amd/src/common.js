@@ -25,5 +25,6 @@
 const component = 'tiny_formatting';
 
 export default {
+    component,
     pluginName: `${component}/plugin`,
 };
