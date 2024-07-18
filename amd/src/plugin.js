@@ -48,9 +48,6 @@ const configureMenu = (menu) => {
     return menu;
 };
 
-// 'lib/editor/tiny/plugins/formatting/fonts/Grundschulschrift_1.ttf';
-// 'lib/editor/tiny/plugins/formatting/fonts/Handschrift_1.ttf';
-
 // eslint-disable-next-line no-async-promise-executor
 export default new Promise(async (resolve) => {
     // Note: The PluginManager.add function does not support asynchronous configuration.
@@ -69,14 +66,23 @@ export default new Promise(async (resolve) => {
         return pluginMetadata;
     });
     resolve([pluginName, {
-        configure: (instanceConfig) => ({
-            menu: configureMenu(instanceConfig.menu),
-            content_style: "@font-face {\n" +
-                "  font-family: Grundschulschrift_1;\n" +
-                "  src: url('/lib/editor/tiny/plugins/formatting/fonts/Grundschulschrift_1.ttf');\n" +
-                "} body { font-family: Grundschulschrift_1; }",
-            font_family_formats: "Grundschulschrift_1=Grundschulschrift_1; Andale Mono=andale mono,times; Arial=arial,helvetica,sans-serif; Arial Black=arial black,avant garde; Book Antiqua=book antiqua,palatino; Comic Sans MS=comic sans ms,sans-serif; Courier New=courier new,courier; Georgia=georgia,palatino; Helvetica=helvetica; Impact=impact,chicago; Symbol=symbol; Tahoma=tahoma,arial,helvetica,sans-serif; Terminal=terminal,monaco; Times New Roman=times new roman,times; Trebuchet MS=trebuchet ms,geneva; Verdana=verdana,geneva; Webdings=webdings; Wingdings=wingdings,zapf dingbats",
-        })
+        configure: (instanceConfig) => {
+            let styleelements = document.querySelectorAll('head link[href*="styles.php"]');
+            styleelements.forEach(el => {
+                instanceConfig.content_css.push(el.href);
+            });
+
+            return {
+                menu: configureMenu(instanceConfig.menu),
+                font_family_formats: 'Schulhandschrift=Schulhandschrift; Handschrift=Handschrift; ' +
+                    'Atkinson Hyperlegible=Atkinson Hyperlegible; Lexend=Lexend; Arial=Arial, Helvetica, sans-serif; ' +
+                    'Times=Times New Roman, Times, serif; Courier=Courier New, Courier, mono; ' +
+                    'Georgia=Georgia, Times New Roman, Times, serif; Verdana=Verdana, Geneva, sans-serif; ' +
+                    'Trebuchet=Trebuchet MS, Helvetica, sans-serif; Amaranth=amaranth; ' +
+                    'Schulausgangsschrift=bienchen_a; Schulausgangsschrift Unverbunden=bienchen_b; ' +
+                    'Schulbuch Bayern=SchulbuchBayern; Vereinfachte Ausgangsschrift Liniert=VA2; ' +
+                    'Vereinfachte Ausgangsschrift=VAu30k; Open Dyslexia=OpenDyslexic;',
+            };
         }
-    ]);
+    }]);
 });

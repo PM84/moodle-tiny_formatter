@@ -25,5 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+$string['fonts'] = 'Fonts';
+$string['fonts_desc'] = 'Choose the fonts you want to see in TinyMCE';
 $string['pluginname'] = 'Formatting';
 $string['privacy:metadata'] = 'The Formatting editor for TinyMCE does not store any personal data.';
+$string['settings'] = 'Settings';
