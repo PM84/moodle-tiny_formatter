@@ -25,6 +25,18 @@
 import {component, pluginName} from 'tiny_formatting/common';
 import {getTinyMCE} from 'editor_tiny/loader';
 import {getPluginMetadata} from 'editor_tiny/utils';
+import {getPluginOptionName} from 'editor_tiny/options';
+
+const availableFontsName = getPluginOptionName(pluginName, 'fonts');
+
+const registerOptions = (editor) => {
+    const registerOption = editor.options.register;
+
+    registerOption(availableFontsName, {
+        processor: 'string',
+    });
+};
+export const getAvailableFonts = (editor) => editor.options.get(availableFontsName);
 
 // Setup the tiny_formatting Plugin.
 const configureMenu = (menu) => {
@@ -62,16 +74,17 @@ export default new Promise(async (resolve) => {
 
     // Reminder: Any asynchronous code must be run before this point.
     tinyMCE.PluginManager.add(pluginName, () => {
-        // Return the pluginMetadata object. This is used by TinyMCE to display a help link for your plugin.
         return pluginMetadata;
     });
+
     resolve([pluginName, {
-        configure: (instanceConfig) => {
+        configure: (instanceConfig, options) => {
             let styleelements = document.querySelectorAll('head link[href*="styles.php"]');
             styleelements.forEach(el => {
                 instanceConfig.content_css.push(el.href);
             });
 
+            console.log(options.plugins['tiny_formatting/plugin']);
             return {
                 menu: configureMenu(instanceConfig.menu),
                 font_family_formats: 'Schulhandschrift=Schulhandschrift; Handschrift=Handschrift; ' +
