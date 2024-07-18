@@ -20,6 +20,7 @@
  * @copyright   2024, ISB Bayern
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tiny_formatting
  */
 
 defined('MOODLE_INTERNAL') || die();

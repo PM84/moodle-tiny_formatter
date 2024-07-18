@@ -29,13 +29,6 @@ import {getPluginOptionName} from 'editor_tiny/options';
 
 const availableFontsName = getPluginOptionName(pluginName, 'fonts');
 
-const registerOptions = (editor) => {
-    const registerOption = editor.options.register;
-
-    registerOption(availableFontsName, {
-        processor: 'string',
-    });
-};
 export const getAvailableFonts = (editor) => editor.options.get(availableFontsName);
 
 // Setup the tiny_formatting Plugin.
@@ -84,17 +77,9 @@ export default new Promise(async (resolve) => {
                 instanceConfig.content_css.push(el.href);
             });
 
-            console.log(options.plugins['tiny_formatting/plugin']);
             return {
                 menu: configureMenu(instanceConfig.menu),
-                font_family_formats: 'Schulhandschrift=Schulhandschrift; Handschrift=Handschrift; ' +
-                    'Atkinson Hyperlegible=Atkinson Hyperlegible; Lexend=Lexend; Arial=Arial, Helvetica, sans-serif; ' +
-                    'Times=Times New Roman, Times, serif; Courier=Courier New, Courier, mono; ' +
-                    'Georgia=Georgia, Times New Roman, Times, serif; Verdana=Verdana, Geneva, sans-serif; ' +
-                    'Trebuchet=Trebuchet MS, Helvetica, sans-serif; Amaranth=amaranth; ' +
-                    'Schulausgangsschrift=bienchen_a; Schulausgangsschrift Unverbunden=bienchen_b; ' +
-                    'Schulbuch Bayern=SchulbuchBayern; Vereinfachte Ausgangsschrift Liniert=VA2; ' +
-                    'Vereinfachte Ausgangsschrift=VAu30k; Open Dyslexia=OpenDyslexic;',
+                font_family_formats: options.plugins['tiny_formatting/plugin'].config.fonts,
             };
         }
     }]);

@@ -22,27 +22,30 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use \tiny_formatting\plugininfo;
+use tiny_formatting\plugininfo;
 
- defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die;
 
- $ADMIN->add('editortiny', new admin_category('tiny_formatting', new lang_string('pluginname', 'tiny_formatting')));
- $settings = new admin_settingpage('tiny_formatting_settings', new lang_string('settings', 'tiny_formatting'));
- 
- if ($ADMIN->fulltree) {
-     // Group 1.
-     $name = new lang_string('fonts', 'tiny_formatting');
-     $desc = new lang_string('fonts_desc', 'tiny_formatting');
-     $fonts = plugininfo::get_available_fonts();
-     $default = array_keys($fonts);
-     $choices = $default;
+$ADMIN->add('editortiny', new admin_category('tiny_formatting', new lang_string('pluginname', 'tiny_formatting')));
+$settings = new admin_settingpage('tiny_formatting_settings', new lang_string('settings', 'tiny_formatting'));
 
-     $setting = new admin_setting_configmulticheckbox('tiny_formatting/fonts',
-         $name,
-         $desc,
-         $default,
-         $choices
+if ($ADMIN->fulltree) {
+    // Group 1.
+    $name = new lang_string('fonts', 'tiny_formatting');
+    $desc = new lang_string('fonts_desc', 'tiny_formatting');
+    $fonts = plugininfo::get_available_fonts();
+
+    $fontids = array_keys($fonts);
+    $fontfamilies = plugininfo::get_all_font_families();
+
+    \local_debugger\performance\debugger::print_debug('test', 'availFonts', array_values($fontfamilies));
+
+    $setting = new admin_setting_configmulticheckbox(
+        'tiny_formatting/fontlist',
+        $name,
+        $desc,
+        array_values($fontfamilies),
+        $fontfamilies
     );
-     $settings->add($setting);
- }
- 
+    $settings->add($setting);
+}

@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Privacy Subsystem implementation for the Formatting plugin for TinyMCE.
+ *
+ * @copyright   2024, ISB Bayern
+ * @author      Dr. Peter Mayer
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tiny_formatting
+ */
+
 namespace tiny_formatting\privacy;
 
 /**
@@ -22,10 +31,14 @@ namespace tiny_formatting\privacy;
  * @copyright   2024, ISB Bayern
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tiny_formatting
  */
-
 class provider implements \core_privacy\local\metadata\null_provider {
 
+    /**
+     * Get the reason for null provider.
+     * @return string
+     */
     public static function get_reason(): string {
         return 'privacy:metadata';
     }

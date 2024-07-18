@@ -14,7 +14,24 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Tiny formatting plugin for Moodle
+ *
+ * Documentation: {@link https://moodledev.io/docs/apis/plugintypes/tiny}
+ *
+ * @copyright   2024, ISB Bayern
+ * @author      Dr. Peter Mayer
+ * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tiny_formatting
+ */
+
 namespace tiny_formatting;
+
+use core\context;
+use editor_tiny\editor;
+use editor_tiny\plugin;
+use editor_tiny\plugin_with_configuration;
+
 
 /**
  * Tiny formatting plugin for Moodle
@@ -24,15 +41,8 @@ namespace tiny_formatting;
  * @copyright   2024, ISB Bayern
  * @author      Dr. Peter Mayer
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package tiny_formatting
  */
-
-use core\context;
-use editor_tiny\editor;
-use editor_tiny\plugin;
-use editor_tiny\plugin_with_configuration;
-
-
-
 class plugininfo extends plugin implements plugin_with_configuration {
     /**
      * Delivers the configuration to the TinyMCE editor.
@@ -42,19 +52,25 @@ class plugininfo extends plugin implements plugin_with_configuration {
      * @param \editor_tiny\editor|null $editor The editor object.
      * @return array The configuration for the editor.
      */
-    public static function get_plugin_configuration_for_context(context $context, array $options, array $fpoptions,
-        ?editor $editor = null): array {
+    public static function get_plugin_configuration_for_context(
+        context $context,
+        array $options,
+        array $fpoptions,
+        ?editor $editor = null
+    ): array {
 
-        $available_fonts = self::get_available_fonts();
-        $fontlist = get_config('tiny_formatting', 'fontlist');
-        $fonts = '';
+        $fontids = explode(',', get_config('tiny_formatting', 'fontlist'));
+        $allowedfonts = array_intersect_key(self::get_all_font_families(), array_flip($fontids));
+        $fallbacks = self::get_all_font_fallbacks();
 
-        foreach ($fontlist as $font) {
-            $fonts .= $font . '=' . $available_fonts[$font] . ';';
+        $fonts = [];
+        foreach ($allowedfonts as $fontid => $fontfamily) {
+            $fonts[$fontid] = $fontfamily . "=" . $fallbacks[$fontid];
         }
+        asort($fonts);
 
         return [
-            'fonts' => $fonts,
+            'fonts' => join(';', array_values($fonts)),
         ];
     }
 
@@ -64,23 +80,98 @@ class plugininfo extends plugin implements plugin_with_configuration {
      */
     public static function get_available_fonts(): array {
         return [
-            'Schulhandschrift' => 'Schulhandschrift',
-            'Handschrift' => 'Handschrift',
-            'Atkinson Hyperlegible' => 'Atkinson Hyperlegible',
-            'Lexend' => 'Lexend',
-            'Arial' => 'Arial, Helvetica, sans-serif',
-            'Times' => 'Times New Roman, Times, serif',
-            'Courier' => 'Courier New, Courier, mono',
-            'Georgia' => 'Georgia, Times New Roman, Times, serif',
-            'Verdana' => 'Verdana, Geneva, sans-serif',
-            'Trebuchet' => 'Trebuchet MS, Helvetica, sans-serif',
-            'Amaranth' => 'amaranth',
-            'Schulausgangsschrift' => 'bienchen_a',
-            'Schulausgangsschrift Unverbunden' => 'bienchen_b',
-            'Schulbuch Bayern' => 'SchulbuchBayern',
-            'Vereinfachte Ausgangsschrift Liniert' => 'VA2',
-            'Vereinfachte Ausgangsschrift' => 'VAu30k',
-            'Open Dyslexia' => 'OpenDyslexic',
+            1 => [
+                'fontfamily' => 'Schulhandschrift',
+                'fallback' => 'Schulhandschrift',
+            ],
+            2 => [
+                'fontfamily' => 'Handschrift',
+                'fallback' => 'Handschrift',
+            ],
+            3 => [
+                'fontfamily' => 'Atkinson Hyperlegible',
+                'fallback' => 'Atkinson Hyperlegible',
+            ],
+            4 => [
+                'fontfamily' => 'Lexend',
+                'fallback' => 'Lexend',
+            ],
+            5 => [
+                'fontfamily' => 'Arial',
+                'fallback' => 'Arial, Helvetica, sans-serif',
+            ],
+            6 => [
+                'fontfamily' => 'Times',
+                'fallback' => 'Times New Roman, Times, serif',
+            ],
+            7 => [
+                'fontfamily' => 'Courier',
+                'fallback' => 'Courier New, Courier, mono',
+            ],
+            8 => [
+                'fontfamily' => 'Georgia',
+                'fallback' => 'Georgia, Times New Roman, Times, serif',
+            ],
+            9 => [
+                'fontfamily' => 'Verdana',
+                'fallback' => 'Verdana, Geneva, sans-serif',
+            ],
+            10 => [
+                'fontfamily' => 'Trebuchet',
+                'fallback' => 'Trebuchet MS, Helvetica, sans-serif',
+            ],
+            11 => [
+                'fontfamily' => 'Amaranth',
+                'fallback' => 'amaranth',
+            ],
+            12 => [
+                'fontfamily' => 'Schulausgangsschrift',
+                'fallback' => 'bienchen_a',
+            ],
+            13 => [
+                'fontfamily' => 'Schulausgangsschrift Unverbunden',
+                'fallback' => 'bienchen_b',
+            ],
+            14 => [
+                'fontfamily' => 'Schulbuch Bayern',
+                'fallback' => 'SchulbuchBayern',
+            ],
+            15 => [
+                'fontfamily' => 'Vereinfachte Ausgangsschrift Liniert',
+                'fallback' => 'VA2',
+            ],
+            16 => [
+                'fontfamily' => 'Vereinfachte Ausgangsschrift',
+                'fallback' => 'VAu30k',
+            ],
+            17 => [
+                'fontfamily' => 'Open Dyslexia',
+                'fallback' => 'OpenDyslexic',
+            ],
         ];
+    }
+
+    /**
+     * Get the fontfamilies
+     * @return array
+     */
+    public static function get_all_font_families(): array {
+
+        $fontids = array_keys(self::get_available_fonts());
+        $fontfamilies = array_map(fn ($x) => $x['fontfamily'], self::get_available_fonts());
+
+        return array_combine($fontids, $fontfamilies);
+    }
+
+    /**
+     * Get the font fallbacks
+     * @return array
+     */
+    public static function get_all_font_fallbacks(): array {
+
+        $fontids = array_keys(self::get_available_fonts());
+        $fontfallbacks = array_map(fn ($x) => $x['fallback'], self::get_available_fonts());
+
+        return array_combine($fontids, $fontfallbacks);
     }
 }
