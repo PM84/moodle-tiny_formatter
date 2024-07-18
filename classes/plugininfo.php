@@ -16,8 +16,6 @@
 
 namespace tiny_formatting;
 
-use editor_tiny\plugin;
-
 /**
  * Tiny formatting plugin for Moodle
  *
@@ -28,5 +26,56 @@ use editor_tiny\plugin;
  * @license     https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use editor_tiny\plugin;
+
 class plugininfo extends plugin {
+    /**
+     * Delivers the configuration to the TinyMCE editor.
+     * @param \context $context The context in which the editor is used.
+     * @param array $options The options for the editor.
+     * @param array $fpoptions The options for the filepicker.
+     * @param \editor_tiny\editor|null $editor The editor object.
+     * @return array The configuration for the editor.
+     */
+    public static function get_plugin_configuration_for_context(context $context, array $options, array $fpoptions,
+        ?editor $editor = null): array {
+        
+        $available_fonts = self::get_available_fonts();
+        $fontlist = get_config('tiny_formatting', 'fontlist');
+        $fonts = '';
+
+        foreach ($fontlist as $font) {
+            $fonts .= $font . '=' . $available_fonts[$font] . ';';
+        }
+
+        return [
+            'fonts' => $fonts,
+        ];
+    }
+
+    /**
+     * Returns the available fonts for the editor as an array.
+     * @return array The available fonts.
+     */
+    public static function get_available_fonts(): array {
+        return [
+            'Schulhandschrift' => 'Schulhandschrift',
+            'Handschrift' => 'Handschrift',
+            'Atkinson Hyperlegible' => 'Atkinson Hyperlegible',
+            'Lexend' => 'Lexend',
+            'Arial' => 'Arial, Helvetica, sans-serif',
+            'Times' => 'Times New Roman, Times, serif',
+            'Courier' => 'Courier New, Courier, mono',
+            'Georgia' => 'Georgia, Times New Roman, Times, serif',
+            'Verdana' => 'Verdana, Geneva, sans-serif',
+            'Trebuchet' => 'Trebuchet MS, Helvetica, sans-serif',
+            'Amaranth' => 'amaranth',
+            'Schulausgangsschrift' => 'bienchen_a',
+            'Schulausgangsschrift Unverbunden' => 'bienchen_b',
+            'Schulbuch Bayern' => 'SchulbuchBayern',
+            'Vereinfachte Ausgangsschrift Liniert' => 'VA2',
+            'Vereinfachte Ausgangsschrift' => 'VAu30k',
+            'Open Dyslexia' => 'OpenDyslexic',
+        ];
+    }
 }
