@@ -38,8 +38,6 @@ if ($ADMIN->fulltree) {
     $fontids = array_keys($fonts);
     $fontfamilies = plugininfo::get_all_font_families();
 
-    \local_debugger\performance\debugger::print_debug('test', 'availFonts', array_values($fontfamilies));
-
     $setting = new admin_setting_configmulticheckbox(
         'tiny_formatting/fontlist',
         $name,
