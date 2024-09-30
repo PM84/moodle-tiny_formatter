@@ -67,11 +67,36 @@ class plugininfo extends plugin implements plugin_with_configuration {
         foreach ($allowedfonts as $fontid => $fontfamily) {
             $fonts[$fontid] = $fontfamily . "=" . $fallbacks[$fontid];
         }
+
+        // Get fonts from theme (currently boost_union only).
+        $themenames = array_keys(\core_component::get_plugin_list('theme'));
+        if (in_array('boost_union', $themenames)) {
+            $customfonts = self::get_custom_fonts_from_theme_boost_union();
+            $fonts = array_merge($customfonts, $fonts);
+        }
         asort($fonts);
 
         return [
             'fonts' => join(';', array_values($fonts)),
         ];
+    }
+
+    /**
+     * Get the custom fonts uploaded in theme_boost_union.
+     * @return array
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function get_custom_fonts_from_theme_boost_union() {
+        $customfonts = [];
+        if(function_exists('theme_boost_union_get_customfonts_templatecontext')) {
+            $filesforcontext = theme_boost_union_get_customfonts_templatecontext();
+            // Get fontname from filename.
+            foreach ($filesforcontext as $entry) {
+                $customfonts[] = pathinfo($entry['filename'], PATHINFO_FILENAME);
+            }
+        }
+        return $customfonts;
     }
 
     /**
